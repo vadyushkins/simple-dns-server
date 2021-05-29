@@ -1,4 +1,4 @@
-CFPQ_Data
+simple-dns-server-py
 =========
 
 .. image:: https://github.com/vdshk/simple-dns-server-py/actions/workflows/lint.yml/badge.svg
