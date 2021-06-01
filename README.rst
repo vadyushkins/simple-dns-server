@@ -15,6 +15,10 @@ Simple DNS Server written in Python
 ***
 Try
 ***
-In one terminal tab enter `sudo python3 main.py`
+In one terminal tab enter:
 
-In another terminal tab enter `dig <domain> @127.0.0.1`
+``sudo python3 main.py``
+
+In another terminal tab enter:
+
+``dig <domain> @127.0.0.1``
