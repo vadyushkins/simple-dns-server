@@ -11,3 +11,10 @@ simple-dns-server-py
    :target: https://github.com/vdshk/simple-dns-server-py/blob/main/LICENSE
 
 Simple DNS Server written in Python
+
+***
+Try
+***
+In one terminal tab enter `sudo python3 main.py`
+
+In another create a DNS-queries using dig: `dig <domain> @127.0.0.1`
