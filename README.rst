@@ -17,4 +17,4 @@ Try
 ***
 In one terminal tab enter `sudo python3 main.py`
 
-In another create a DNS-queries using dig: `dig <domain> @127.0.0.1`
+In another terminal tab enter `dig <domain> @127.0.0.1`
