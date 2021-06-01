@@ -12,6 +12,12 @@ simple-dns-server-py
 
 Simple DNS Server written in Python
 
+************
+Requirements
+************
+
+``pip install -r requirements.txt``
+
 ***
 Try
 ***
