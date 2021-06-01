@@ -13,7 +13,7 @@ client_socket = dns.query._make_socket(
 )
 
 resolver = dns.resolver.Resolver(configure=False)
-resolver.nameservers = (
+resolver.nameservers = [
     "198.41.0.4",
     "199.9.14.201",
     "192.33.4.12",
@@ -27,7 +27,7 @@ resolver.nameservers = (
     "193.0.14.129",
     "199.7.83.42",
     "202.12.27.33",
-)
+]
 
 cache = dict()
 
