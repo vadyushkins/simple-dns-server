@@ -12,6 +12,8 @@ simple-dns-server-py
 
 Simple DNS Server written in Python
 
+.. image:: img/example.gif
+
 ************
 Requirements
 ************
