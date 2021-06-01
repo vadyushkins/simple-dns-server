@@ -1,19 +1,14 @@
 import copy
 import socket
 
-import dns.resolver
+import dns.message
+import dns.name
+import dns.query
+import dns.rdata
+import dns.rdataclass
+import dns.rdatatype
 
-PORT = 53
-IP = "127.0.0.1"
-
-client_socket = dns.query._make_socket(
-    socket.AF_INET,
-    socket.SOCK_DGRAM,
-    (IP, PORT),
-)
-
-resolver = dns.resolver.Resolver(configure=False)
-resolver.nameservers = [
+ROOT_SERVERS = [
     "198.41.0.4",
     "199.9.14.201",
     "192.33.4.12",
@@ -31,26 +26,69 @@ resolver.nameservers = [
 
 cache = dict()
 
-while True:
-    request, received_time, from_address = dns.query.receive_udp(client_socket)
+client_socket = dns.query._make_socket(
+    af=socket.AF_INET,
+    type=socket.SOCK_DGRAM,
+    source=("localhost", 53),
+)
 
-    query = str(request.question[0]).split()[0]
 
-    response = copy.deepcopy(request)
-
+def resolve(query):
     if query in cache:
-        result = cache[query]
-    else:
-        result = resolver.resolve(
-            query,
-            rdtype=dns.rdatatype.A,
-            rdclass=dns.rdataclass.IN,
-            search=True,
-            raise_on_no_answer=False,
-        )
-        cache[query] = result
+        return cache[query]
 
-    response.answer = result.response.answer
-    response.flags |= dns.flags.QR
+    query_message = dns.message.make_query(
+        qname=query,
+        rdtype=dns.rdatatype.A,
+        rdclass=dns.rdataclass.IN,
+    )
 
-    dns.query.send_udp(client_socket, response, from_address)
+    for root_server in ROOT_SERVERS:
+        response = resolve_recursive(query_message, root_server)
+
+        if response is not None:
+            cache[query] = response
+            return response
+
+    return None
+
+
+def resolve_recursive(query, where):
+    response = dns.query.udp(
+        q=query,
+        where=where,
+        raise_on_truncation=False,
+    )
+
+    if response:
+        if response.answer:
+            return response
+        elif response.additional:
+            for additional in response.additional:
+                if additional.rdtype != dns.rdatatype.A:
+                    continue
+                for add in additional:
+                    new_response = resolve_recursive(query, str(add))
+                    if new_response:
+                        return new_response
+
+    return response
+
+
+if __name__ == "__main__":
+    while True:
+        request, _, from_address = dns.query.receive_udp(client_socket)
+
+        query = str(request.question[0]).split()[0]
+
+        response = copy.deepcopy(request)
+
+        result = resolve(dns.name.from_text(query))
+
+        if result is not None:
+            response.answer = resolve(dns.name.from_text(query)).answer
+            response.flags |= dns.flags.QR | dns.flags.RA
+            if response.flags & dns.flags.AD:
+                response.flags ^= dns.flags.AD
+
+        dns.query.send_udp(client_socket, response, from_address)
