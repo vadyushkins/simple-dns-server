@@ -46,11 +46,9 @@ def resolve(query):
     for root_server in ROOT_SERVERS:
         response = resolve_recursive(query_message, root_server)
 
-        if response is not None:
+        if response:
             cache[query] = response
             return response
-
-    return None
 
 
 def resolve_recursive(query, where):
@@ -85,8 +83,8 @@ if __name__ == "__main__":
 
         result = resolve(dns.name.from_text(query))
 
-        if result is not None:
-            response.answer = resolve(dns.name.from_text(query)).answer
+        if result:
+            response.answer = result.answer
             response.flags |= dns.flags.QR | dns.flags.RA
             if response.flags & dns.flags.AD:
                 response.flags ^= dns.flags.AD
