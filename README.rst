@@ -1,4 +1,4 @@
-simple-dns-server-py
+simple-dns-server
 =========
 
 .. image:: https://github.com/vdshk/simple-dns-server-py/actions/workflows/lint.yml/badge.svg
